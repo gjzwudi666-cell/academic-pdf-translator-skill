@@ -15,10 +15,17 @@ from pathlib import Path
 SKILL_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_PROMPT = SKILL_DIR / "references" / "biomed_academic_prompt.txt"
 DEFAULT_GLOSSARY = SKILL_DIR / "references" / "glossary_biomed_ai_kg.csv"
+LOCAL_BIN = Path.home() / ".local" / "bin"
 
 
 def which(name: str) -> str | None:
-    return shutil.which(name)
+    found = shutil.which(name)
+    if found:
+        return found
+    local_candidate = LOCAL_BIN / name
+    if local_candidate.exists() and os.access(local_candidate, os.X_OK):
+        return str(local_candidate)
+    return None
 
 
 def collect_pdfs(path: Path) -> list[Path]:
@@ -84,8 +91,9 @@ def service_arg_next(service: str) -> str:
 
 
 def command_next(pdf: Path, args: argparse.Namespace) -> list[str]:
+    executable = which("pdf2zh_next") or "pdf2zh_next"
     cmd = [
-        "pdf2zh_next",
+        executable,
         str(pdf),
         "--output",
         str(args.output),
@@ -123,8 +131,9 @@ def command_next(pdf: Path, args: argparse.Namespace) -> list[str]:
 def command_classic(pdf: Path, args: argparse.Namespace) -> list[str]:
     service = args.service.lower()
     classic_service = "deepseek" if service == "deepseek" else service
+    executable = which("pdf2zh") or "pdf2zh"
     cmd = [
-        "pdf2zh",
+        executable,
         str(pdf),
         "-o",
         str(args.output),
@@ -154,6 +163,7 @@ def run_command(cmd: list[str], env_updates: dict[str, str], dry_run: bool) -> i
     if dry_run:
         return 0
     env = os.environ.copy()
+    env["PATH"] = f"{LOCAL_BIN}:{env.get('PATH', '')}"
     env.update(env_updates)
     return subprocess.call(cmd, env=env)
 
@@ -166,9 +176,9 @@ def doctor(_: argparse.Namespace) -> None:
     print(f"glossary:    {DEFAULT_GLOSSARY}")
     print("\nRecommended install on macOS:")
     print("  python3 -m pip install --user uv")
-    print("  uv tool install --python 3.12 pdf2zh")
-    print("  pdf2zh --help")
-    print("\nNote: pdf2zh 1.9.x uses the newer BabelDOC backend via --babeldoc.")
+    print("  uv tool install --python 3.12 pdf2zh-next")
+    print("  ~/.local/bin/pdf2zh_next --help")
+    print("\nNote: uv usually installs tools into ~/.local/bin. The helper checks that path automatically.")
 
 
 def translate_cmd(args: argparse.Namespace) -> None:
