@@ -1,4 +1,0 @@
-interface:
-  display_name: "Academic PDF Translator"
-  short_description: "Layout-preserving academic PDF translation."
-  default_prompt: "Use $academic-pdf-translator to translate this academic PDF or folder into Chinese while preserving layout."
