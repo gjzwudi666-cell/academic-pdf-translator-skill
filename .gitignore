@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.DS_Store
+*.log
+中文翻译版/
+中文翻译版_试译/
+*.pdf
