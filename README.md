@@ -18,7 +18,7 @@ Clone or download this repository into your Codex skills folder:
 
 ```bash
 mkdir -p ~/.codex/skills
-git clone https://github.com/YOUR_USERNAME/academic-pdf-translator-skill.git ~/.codex/skills/academic-pdf-translator
+git clone https://github.com/gjzwudi666-cell/academic-pdf-translator-skill.git ~/.codex/skills/academic-pdf-translator
 ```
 
 Then restart Codex or open a new Codex conversation.
